@@ -17,23 +17,21 @@ def frange(x, y, jump):
         yield x
         x += jump
 
-def mendelbrot(x, y):
-    arr = [Complex(0, 0)]
-    n_iters = 0
-    try_again = True
-    while try_again == True and n_iters < 200:
-        try:
-            arr.append(arr[-1].square().add(Complex(x, y)))
+def mendelbrot(x, y, max_iter):
+    z = [Complex(0, 0)]
+    for i in range(max_iter):
+        try: 
+            z.append(z[-1].square().add(Complex(x, y)))
         except: 
-            try_again = False
-        n_iters += 1
-    return len(arr)
+            return i
+    return max_iter
 
 if __name__ == "__main__":
     x_center = float(input("Please enter center x.\n"))
     y_center = float(input("Please enter center y.\n"))
     resolution = float(input("Please enter resolution.\n"))
     n_pixels = int(input("Please enter the size of the image.\n"))
+    max_iter = int(input("Please enter the maximum number of iterations.\n"))
 
     x_min = x_center - ((n_pixels / 2) * resolution)
     x_max = x_center + ((n_pixels / 2) * resolution)
@@ -43,10 +41,10 @@ if __name__ == "__main__":
     img = np.zeros((n_pixels, n_pixels))
     for i, x in zip(range(n_pixels), frange(x_min, x_max, resolution)):
         for j, y in zip(range(n_pixels), frange(x_min, x_max, resolution)):
-            img[j][i] = mendelbrot(x, y)
+            img[j][i] = mendelbrot(x, y, max_iter)
         print(i)
 
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(12, 8))
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     plt.imshow(img, interpolation='none', extent=[x_min, x_max, y_min, y_max])
