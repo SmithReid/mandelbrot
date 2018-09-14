@@ -7,7 +7,19 @@ Not so much as a glance at any solution specific code, except a little help from
 Inputs for photoset: 
     center x: 0.3876
     center y: -0.03745
-    resolution: 0.000001 # 'step', 'pixel', or 'unit'
+    initial resolution: 0.000001 # 'step', 'pixel', or 'unit'
     size of image: 10000 # (10000 x 10000)px
+    max number of iterations: 200
+    frames: 1
+    next frame scale: doesn't matter
+
+Inputs for gif: 
+    center x: 0.3876
+    center y: -0.03745
+    initial resolution: 0.00001
+    size of image: 750
+    max number of iterations: 100
+    number of frames: 25
+    next frame scale: 0.6
 
 TODO: Improve method of determining how quickly the point diverges/improve coloring system

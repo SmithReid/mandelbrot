@@ -5,9 +5,11 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 cycler==0.10.0            # via matplotlib
+imageio==2.4.1
 kiwisolver==1.0.1         # via matplotlib
 matplotlib==2.2.3
 numpy==1.15.1
+pillow==5.2.0             # via imageio
 pyparsing==2.2.0          # via matplotlib
 python-dateutil==2.7.3    # via matplotlib
 pytz==2018.5              # via matplotlib
