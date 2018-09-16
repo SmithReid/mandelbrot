@@ -1,6 +1,7 @@
+from datetime import datetime
+start_time = datetime.now()
 import numpy as np
 import matplotlib.pyplot as plt
-from datetime import datetime
 import imageio
 import os
 import multiprocessing
@@ -114,6 +115,7 @@ if __name__ == "__main__":
     for filename in intermediates:
         images.append(imageio.imread('intermediates/{}'.format(filename)))
     imageio.mimsave('final/{}.gif'.format(str(datetime.now().strftime('%Y-%m-%d_%H:%M'))), images)
+    print("Runtime = {}".format(datetime.now() - start_time))
 
 
 
