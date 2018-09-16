@@ -52,6 +52,7 @@ def mendelbrot(x, y, max_iter):
         an integer color
     Function: 
         For a complex number, c = x + yi, decide whether the series: z[n] = z[n-1]^2 + c converges, and if it diverges, how quickly it does so. 
+    TODO: come up with a better way of measuring how quickly the series diverges, if it diverges
     """
     z = [Complex(0, 0)]
     for i in range(max_iter):
