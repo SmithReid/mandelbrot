@@ -1,3 +1,10 @@
+# Code Written by Reid Smith
+# Began on 9/13/2018
+# Creative Commons license
+# A basic implementation of the Mandelbrot set
+
+# The script collects some inputs, and then saves a .gif and each frame to disk
+
 from datetime import datetime
 start_time = datetime.now()
 import numpy as np
@@ -55,11 +62,31 @@ def mendelbrot(x, y, max_iter):
     return max_iter
 
 def sort_intermediates(arr):
+    """
+    Sorts an array where each element is in the string form "{}.png".format(frame_number)
+    Inputs: 
+        arr: the array
+    Outputs: 
+        The properly sorted array
+    """
     arr = [int(x.strip('.png')) for x in arr]
     return [str(x) + '.png' for x in sorted(arr)]
 
 def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, frame_number, size_per_frame):
-    resolution = initial_resolution * (size_per_frame ** frame_number)
+    """
+    Renders and saves a single frame of the .gif
+    Inputs: 
+        x_center: the x center of the frame
+        y_center: the y center of the frame
+        initial_resolution: the resolution of frame 1
+        n_pixels: the frame is a square. This is the number of pixels on either side
+        max_iter: the maximum number of iterations of the mandelbrot calculation
+        frame_number: the frame number
+        size_per_frame: see the first line of this function. Each frame is scaled by this value
+    Outputs: 
+        saves the frame to disk
+    """
+    resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
     x_min = x_center - ((n_pixels / 2) * resolution)
     x_max = x_center + ((n_pixels / 2) * resolution)
     y_min = y_center - ((n_pixels / 2) * resolution)
