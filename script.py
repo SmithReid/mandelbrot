@@ -97,7 +97,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     # run the mandelbrot calculation for each pixel
     img = np.zeros((n_pixels, n_pixels))
     for i, x in zip(range(n_pixels), frange(x_min, x_max, resolution)):
-        for j, y in zip(range(n_pixels), frange(x_min, x_max, resolution)):
+        for j, y in zip(range(n_pixels), frange(y_min, y_max, resolution)):
             img[j][i] = mendelbrot(x, y, max_iter)
 
     # save the image
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     x_center = float(input("Please enter center x.\n"))
     y_center = float(input("Please enter center y.\n"))
     resolution = float(input("Please enter starting resolution.\n"))
-    n_pixels = int(input("Please enter the size of the squre (pixels).\n"))
+    n_pixels = int(input("Please enter the size of the square (pixels).\n"))
     max_iter = int(input("Please enter the maximum number of iterations.\n"))
     frames = int(input("Please enter the number of frames.\n"))
     size_per_frame = float(input("Next frame scale?\n"))
@@ -140,6 +140,7 @@ if __name__ == "__main__":
             for active_process in active_processes:
                 active_process.join()
             active_processes = []
+
     # kick off any remaining processes
     if len(active_processes) > 0:
         for active_process in active_processes:
