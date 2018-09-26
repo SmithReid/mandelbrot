@@ -16,7 +16,7 @@ import multiprocessing
 class Complex(object):
     """
     A basic implementation of complex numbers.  
-    Functionality is limited to that  which is required by my problem.
+    Functionality is limited to that  which is required by the mandelbrot problem.
     """
     def __init__(self, real, imaginary):
         self.real = real
@@ -87,17 +87,20 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     Outputs: 
         saves the frame to disk
     """
+    # calculate the limits of the image
     resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
     x_min = x_center - ((n_pixels / 2) * resolution)
     x_max = x_center + ((n_pixels / 2) * resolution)
     y_min = y_center - ((n_pixels / 2) * resolution)
     y_max = y_center + ((n_pixels / 2) * resolution)
 
+    # run the mandelbrot calculation for each pixel
     img = np.zeros((n_pixels, n_pixels))
     for i, x in zip(range(n_pixels), frange(x_min, x_max, resolution)):
         for j, y in zip(range(n_pixels), frange(x_min, x_max, resolution)):
             img[j][i] = mendelbrot(x, y, max_iter)
 
+    # save the image
     plt.figure(figsize=(12, 8))
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
@@ -107,10 +110,12 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     print("Frame #{} complete".format(str(frame_number)))
 
 if __name__ == "__main__":
+    # remove the old intermediate images
     old_images = os.listdir("intermediates")
     for filename in old_images:
         os.remove('intermediates/{}'.format(filename))
 
+    # collect user inputs
     x_center = float(input("Please enter center x.\n"))
     y_center = float(input("Please enter center y.\n"))
     resolution = float(input("Please enter starting resolution.\n"))
@@ -119,10 +124,13 @@ if __name__ == "__main__":
     frames = int(input("Please enter the number of frames.\n"))
     size_per_frame = float(input("Next frame scale?\n"))
 
+    # generate a list of processes, one for each frame (see render_frame())
     multiprocessing.set_start_method('spawn')
     processes = []
     for frame_number in range(1, frames + 1):
         processes.append(multiprocessing.Process(target=render_frame, args=(x_center, y_center, resolution, n_pixels, max_iter, frame_number, size_per_frame)))
+
+    # in batches of length cpu_count, kick off processes
     active_processes = []
     for process in processes:
         active_processes.append(process)
@@ -132,12 +140,14 @@ if __name__ == "__main__":
             for active_process in active_processes:
                 active_process.join()
             active_processes = []
+    # kick off any remaining processes
     if len(active_processes) > 0:
         for active_process in active_processes:
             active_process.start()
         for active_process in active_processes:
             active_process.join()
 
+    # compile the gif from the images and save
     intermediates = sort_intermediates(os.listdir('intermediates'))
     images = []
     for filename in intermediates:
