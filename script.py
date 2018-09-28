@@ -6,7 +6,6 @@
 # The script collects some inputs, and then saves a .gif and each frame to disk
 
 from datetime import datetime
-start_time = datetime.now()
 import numpy as np
 import matplotlib.pyplot as plt
 import imageio
@@ -25,6 +24,18 @@ class Complex(object):
         return Complex(self.real ** 2 - self.imaginary ** 2, 2 * self.real * self.imaginary)
     def add(self, number):
         return Complex(self.real + number.real, self.imaginary + number.imaginary)
+    def __eq__(self, other):
+        if self.real == other.real and self.imaginary == other.imaginary:
+            return True
+        else: 
+            return False
+    def approx_eq(self, other):
+        if int(self.real * 100) == int(other.real * 100)\
+            and int(self.imaginary * 100) == int(other.imaginary * 100):
+            print("We did it!")
+            return True
+        else: 
+            return False
     def __repr__(self):
         return '{} + {}i'.format(str(self.real), str(self.imaginary))
 
@@ -60,6 +71,7 @@ def mendelbrot(x, y, max_iter):
             z.append(z[-1].square().add(Complex(x, y)))
         except: 
             return i
+
     return max_iter
 
 def sort_intermediates(arr):
@@ -99,6 +111,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     for i, x in zip(range(n_pixels), frange(x_min, x_max, resolution)):
         for j, y in zip(range(n_pixels), frange(y_min, y_max, resolution)):
             img[j][i] = mendelbrot(x, y, max_iter)
+    np.savetxt('arrays/{}_array.csv'.format(str(frame_number)), img)
 
     # save the image
     plt.figure(figsize=(12, 8))
@@ -107,7 +120,6 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     plt.imshow(img, interpolation='none', extent=[x_min, x_max, y_min, y_max])
     plt.savefig('intermediates/{}.png'.format(str(frame_number)).zfill(4))
     plt.close()
-    print("Frame #{} complete".format(str(frame_number)))
 
 if __name__ == "__main__":
     # remove the old intermediate images
@@ -123,12 +135,24 @@ if __name__ == "__main__":
     max_iter = int(input("Please enter the maximum number of iterations.\n"))
     frames = int(input("Please enter the number of frames.\n"))
     size_per_frame = float(input("Next frame scale?\n"))
+    
+    start_time = datetime.now()
 
     # generate a list of processes, one for each frame (see render_frame())
     multiprocessing.set_start_method('spawn')
     processes = []
     for frame_number in range(1, frames + 1):
-        processes.append(multiprocessing.Process(target=render_frame, args=(x_center, y_center, resolution, n_pixels, max_iter, frame_number, size_per_frame)))
+        processes.append(multiprocessing.Process(
+        # This comment will serve to emphasize the next line
+            target=render_frame, 
+            args=(
+                x_center, 
+                y_center, 
+                resolution, 
+                n_pixels, 
+                max_iter, 
+                frame_number, 
+                size_per_frame)))
 
     # in batches of length cpu_count, kick off processes
     active_processes = []
@@ -139,6 +163,8 @@ if __name__ == "__main__":
                 active_process.start()
             for active_process in active_processes:
                 active_process.join()
+            print("{} frames completed.".format(multiprocessing.cpu_count()))
+            print("Elapsed time: {}".format(datetime.now() - start_time))
             active_processes = []
 
     # kick off any remaining processes
@@ -154,10 +180,13 @@ if __name__ == "__main__":
     for filename in intermediates:
         images.append(imageio.imread('intermediates/{}'.format(filename)))
     imageio.mimsave('final/{}.gif'.format(str(datetime.now().strftime('%Y-%m-%d_%H:%M'))), images)
-    print("Runtime = {}".format(datetime.now() - start_time))
+    print("Runtime: {}".format(datetime.now() - start_time))
 
 
-
+"""
+Next Run: 
+0.35138, -0.0882
+"""
 
 
 
