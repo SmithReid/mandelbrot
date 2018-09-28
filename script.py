@@ -155,15 +155,16 @@ if __name__ == "__main__":
                 size_per_frame)))
 
     # in batches of length cpu_count, kick off processes
+    cpu_count = multiprocessing.cpu_count()
     active_processes = []
     for process in processes:
         active_processes.append(process)
-        if len(active_processes) == multiprocessing.cpu_count():
+        if len(active_processes) == cpu_count:
             for active_process in active_processes:
                 active_process.start()
             for active_process in active_processes:
                 active_process.join()
-            print("{} frames completed.".format(multiprocessing.cpu_count()))
+            print("{} frames completed.".format(cpu_count))
             print("Elapsed time: {}".format(datetime.now() - start_time))
             active_processes = []
 
@@ -179,13 +180,13 @@ if __name__ == "__main__":
     images = []
     for filename in intermediates:
         images.append(imageio.imread('intermediates/{}'.format(filename)))
-    imageio.mimsave('final/{}.gif'.format(str(datetime.now().strftime('%Y-%m-%d_%H:%M'))), images)
+    imageio.mimsave('final/{}.gif'.format(str(datetime.now().strftime('%Y-%m-%d--%H-%M'))), images)
     print("Runtime: {}".format(datetime.now() - start_time))
 
 
 """
 Next Run: 
-0.35138, -0.0882
+0.35245, -0.08873
 """
 
 
