@@ -65,7 +65,7 @@ def mendelbrot(x, y, max_iter):
         For a complex number, c = x + yi, decide whether the series: z[n] = z[n-1]^2 + c converges, and if it diverges, how quickly it does so. 
     TODO: come up with a better way of measuring how quickly the series diverges, if it diverges
     """
-    z = [Complex(0, 0)]
+    z = [Complex(x, y)]
     for i in range(max_iter):
         try: 
             z.append(z[-1].square().add(Complex(x, y)))
@@ -114,6 +114,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     img = np.zeros((n_pixels, n_pixels))
     for i, x in zip(range(n_pixels), frange(x_min, x_max, resolution)):
         for j, y in zip(range(n_pixels), frange(y_min, y_max, resolution)):
+            print("{}, {}".format(x, y))
             img[j][i] = mendelbrot(x, y, max_iter)
     np.savetxt('arrays/{}_array.csv'.format(str(frame_number)), img)
 
