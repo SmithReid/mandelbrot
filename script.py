@@ -101,7 +101,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     """
     # change values specific to the frame
     resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
-    max_iter = int(max_iter * (frame_number * 0.5))
+    max_iter = max_iter + (100 * frame_number)
     print("Frame {} max_iter: {}".format(str(frame_number), str(max_iter)))
 
     # calculate the limits of the image
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     resolution = float(input("Please enter starting resolution.\n"))
     n_pixels = int(input("Please enter the size of the square (pixels).\n"))
     # max_iter = int(input("Please enter the maximum number of iterations.\n"))
-    max_iter = 400
+    max_iter = 800
     frames = int(input("Please enter the number of frames.\n"))
     size_per_frame = float(input("Next frame scale?\n"))
     
