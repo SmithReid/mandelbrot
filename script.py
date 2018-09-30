@@ -112,7 +112,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
 
     # run the mandelbrot calculation for each pixel
     img = np.zeros((n_pixels, n_pixels))
-    for i, y in zip(range(n_pixels), frange(x_min, x_max, resolution)):
+    for i, x in zip(range(n_pixels), frange(x_min, x_max, resolution)):
         for j, y in zip(range(n_pixels), frange(y_min, y_max, resolution)):
             img[j][i] = mendelbrot(x, y, max_iter)
     np.savetxt('arrays/{}_array.csv'.format(str(frame_number)), img)
@@ -174,7 +174,7 @@ if __name__ == "__main__":
 
 """
 Next Run: 
-0.3514745, -0.09615625
+0.35204, -0.09723
 """
 
 
