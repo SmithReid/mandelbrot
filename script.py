@@ -22,8 +22,8 @@ class Complex(object):
         self.imaginary = imaginary
     def square(self):
         return Complex(self.real ** 2 - self.imaginary ** 2, 2 * self.real * self.imaginary)
-    def add(self, number):
-        return Complex(self.real + number.real, self.imaginary + number.imaginary)
+    def add(self, other):
+        return Complex(self.real + other.real, self.imaginary + other.imaginary)
     def __eq__(self, other):
         if self.real == other.real and self.imaginary == other.imaginary:
             return True
@@ -65,10 +65,10 @@ def mendelbrot(x, y, max_iter):
         For a complex number, c = x + yi, decide whether the series: z[n] = z[n-1]^2 + c converges, and if it diverges, how quickly it does so. 
     TODO: come up with a better way of measuring how quickly the series diverges, if it diverges
     """
-    z = [Complex(x, y)]
+    z = Complex(0, 0)
     for i in range(max_iter):
         try: 
-            z.append(z[-1].square().add(Complex(x, y)))
+            z = z.square().add(Complex(x, y))
         except: 
             return i
 
@@ -100,8 +100,9 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
         saves the frame to disk
     """
     # change values specific to the frame
+    iter_step = 65
     resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
-    max_iter = max_iter + (100 * frame_number)
+    max_iter = max_iter + (iter_step * frame_number)
     print("Frame {} max_iter: {}".format(str(frame_number), str(max_iter)))
 
     # calculate the limits of the image
@@ -113,7 +114,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     # run the mandelbrot calculation for each pixel
     img = np.zeros((n_pixels, n_pixels))
     for i, x in zip(range(n_pixels), frange(x_min, x_max, resolution)):
-        for j, y in zip(range(n_pixels), frange(y_min, y_max, resolution)):
+        for j, y in zip(range(n_pixels - 1, -1, -1), frange(y_min, y_max, resolution)):
             img[j][i] = mendelbrot(x, y, max_iter)
     np.savetxt('arrays/{}_array.csv'.format(str(frame_number)), img)
 
@@ -138,7 +139,7 @@ if __name__ == "__main__":
     resolution = float(input("Please enter starting resolution.\n"))
     n_pixels = int(input("Please enter the size of the square (pixels).\n"))
     # max_iter = int(input("Please enter the maximum number of iterations.\n"))
-    max_iter = 800
+    max_iter = 300
     frames = int(input("Please enter the number of frames.\n"))
     size_per_frame = float(input("Next frame scale?\n"))
     
@@ -174,7 +175,7 @@ if __name__ == "__main__":
 
 """
 Next Run: 
-0.3514745, -0.09615625
+-0.735, 0.208
 """
 
 
