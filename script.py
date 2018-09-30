@@ -99,8 +99,12 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     Outputs: 
         saves the frame to disk
     """
-    # calculate the limits of the image
+    # change values specific to the frame
     resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
+    max_iter = int(max_iter * (frame_number * 0.5))
+    print("Frame {} max_iter: {}".format(str(frame_number), str(max_iter)))
+
+    # calculate the limits of the image
     x_min = x_center - ((n_pixels / 2) * resolution)
     x_max = x_center + ((n_pixels / 2) * resolution)
     y_min = y_center - ((n_pixels / 2) * resolution)
@@ -108,7 +112,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
 
     # run the mandelbrot calculation for each pixel
     img = np.zeros((n_pixels, n_pixels))
-    for i, x in zip(range(n_pixels), frange(x_min, x_max, resolution)):
+    for i, y in zip(range(n_pixels), frange(x_min, x_max, resolution)):
         for j, y in zip(range(n_pixels), frange(y_min, y_max, resolution)):
             img[j][i] = mendelbrot(x, y, max_iter)
     np.savetxt('arrays/{}_array.csv'.format(str(frame_number)), img)
@@ -120,6 +124,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     plt.imshow(img, interpolation='none', extent=[x_min, x_max, y_min, y_max])
     plt.savefig('intermediates/{}.png'.format(str(frame_number)).zfill(4))
     plt.close()
+    print("Frame {} rendered.".format(str(frame_number)))
 
 if __name__ == "__main__":
     # remove the old intermediate images
@@ -132,18 +137,18 @@ if __name__ == "__main__":
     y_center = float(input("Please enter center y.\n"))
     resolution = float(input("Please enter starting resolution.\n"))
     n_pixels = int(input("Please enter the size of the square (pixels).\n"))
-    max_iter = int(input("Please enter the maximum number of iterations.\n"))
+    # max_iter = int(input("Please enter the maximum number of iterations.\n"))
+    max_iter = 400
     frames = int(input("Please enter the number of frames.\n"))
     size_per_frame = float(input("Next frame scale?\n"))
     
     start_time = datetime.now()
 
-    # generate a list of processes, one for each frame (see render_frame())
+    # for each frame, create and start a process
     multiprocessing.set_start_method('spawn')
     processes = []
     for frame_number in range(1, frames + 1):
         processes.append(multiprocessing.Process(
-        # This comment will serve to emphasize the next line
             target=render_frame, 
             args=(
                 x_center, 
@@ -153,27 +158,10 @@ if __name__ == "__main__":
                 max_iter, 
                 frame_number, 
                 size_per_frame)))
-
-    # in batches of length cpu_count, kick off processes
-    cpu_count = multiprocessing.cpu_count()
-    active_processes = []
     for process in processes:
-        active_processes.append(process)
-        if len(active_processes) == cpu_count:
-            for active_process in active_processes:
-                active_process.start()
-            for active_process in active_processes:
-                active_process.join()
-            print("{} frames completed.".format(cpu_count))
-            print("Elapsed time: {}".format(datetime.now() - start_time))
-            active_processes = []
-
-    # kick off any remaining processes
-    if len(active_processes) > 0:
-        for active_process in active_processes:
-            active_process.start()
-        for active_process in active_processes:
-            active_process.join()
+        process.start()
+    for process in processes:
+        process.join()
 
     # compile the gif from the images and save
     intermediates = sort_intermediates(os.listdir('intermediates'))
@@ -186,7 +174,7 @@ if __name__ == "__main__":
 
 """
 Next Run: 
-0.35245, -0.08873
+0.3514745, -0.09615625
 """
 
 
