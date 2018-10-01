@@ -100,7 +100,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
         saves the frame to disk
     """
     # change values specific to the frame
-    iter_step = 65
+    iter_step = 25
     resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
     max_iter = max_iter + (iter_step * frame_number)
     print("Frame {} max_iter: {}".format(str(frame_number), str(max_iter)))
@@ -159,10 +159,19 @@ if __name__ == "__main__":
                 max_iter, 
                 frame_number, 
                 size_per_frame)))
+    active_processes = []
     for process in processes:
-        process.start()
-    for process in processes:
-        process.join()
+        active_processes.append(process)
+        if len(active_processes) == multiprocessing.cpu_count():
+            for active in active_processes:
+                active.start()
+            for active in active_processes: 
+                active.join()
+    if len(active_processes) > 0:
+        for active in active_processes:
+            active.start()
+        for active in active_processes:
+            active.join()
 
     # compile the gif from the images and save
     intermediates = sort_intermediates(os.listdir('intermediates'))
