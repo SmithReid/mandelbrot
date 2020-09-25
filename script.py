@@ -5,6 +5,8 @@
 
 # The script collects some inputs, and then saves a .gif and each frame to disk
 
+# Wow, I've picked up some better practices since I wrote this...
+
 from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
@@ -69,6 +71,8 @@ def mendelbrot(x, y, max_iter):
     for i in range(max_iter):
         try: 
             z = z.square().add(Complex(x, y))
+            if z.real > 2: 
+                return i
         except: 
             return i
 
@@ -159,25 +163,22 @@ if __name__ == "__main__":
                 max_iter, 
                 frame_number, 
                 size_per_frame)))
-    active_processes = []
-    for process in processes:
-        active_processes.append(process)
-        if len(active_processes) == multiprocessing.cpu_count():
-            for active in active_processes:
-                active.start()
-            for active in active_processes: 
-                active.join()
-    if len(active_processes) > 0:
-        for active in active_processes:
-            active.start()
-        for active in active_processes:
-            active.join()
+    while len(processes) > 0:
+        active_processes = []
+        for i in range(multiprocessing.cpu_count()):
+            active_processes.append(processes.pop(0))
+        for process in active_processes:
+            process.start()
+        for process in active_processes:
+            process.join()
+        del active_processes
 
     # compile the gif from the images and save
     intermediates = sort_intermediates(os.listdir('intermediates'))
     images = []
     for filename in intermediates:
         images.append(imageio.imread('intermediates/{}'.format(filename)))
+    print("Rendering gif.")
     imageio.mimsave('final/{}.gif'.format(str(datetime.now().strftime('%Y-%m-%d--%H-%M'))), images)
     print("Runtime: {}".format(datetime.now() - start_time))
 
