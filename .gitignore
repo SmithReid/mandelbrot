@@ -4,3 +4,4 @@ final/
 arrays/
 env/
 .DS_Store
+__pycache__/
