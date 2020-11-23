@@ -1,6 +1,5 @@
 requirements.in
 intermediates/*
-final/*
 arrays/*
 env/
 .DS_Store
