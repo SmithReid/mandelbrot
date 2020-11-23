@@ -161,7 +161,7 @@ if __name__ == "__main__":
                 max_iter, 
                 frame_number, 
                 size_per_frame)))
-    if len(processes) > 24: 
+    if len(processes) > multiprocessing.cpu_count() * 2: 
         while len(processes) > 0:
             active_processes = []
             for i in range(multiprocessing.cpu_count()):
