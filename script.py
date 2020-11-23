@@ -104,10 +104,9 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
         saves the frame to disk
     """
     # change values specific to the frame
-    iter_step = 25
+    iter_step = 125
     resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
     max_iter = max_iter + (iter_step * frame_number)
-    print("Frame {} max_iter: {}".format(str(frame_number), str(max_iter)))
 
     # calculate the limits of the image
     x_min = x_center - ((n_pixels / 2) * resolution)
@@ -123,7 +122,8 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     np.savetxt('arrays/{}_array.csv'.format(str(frame_number)), img)
 
     # save the image
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(18, 18))
+    plt.axis('on')
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     plt.imshow(img, interpolation='none', extent=[x_min, x_max, y_min, y_max])
@@ -137,15 +137,13 @@ if __name__ == "__main__":
     for filename in old_images:
         os.remove('intermediates/{}'.format(filename))
 
-    # collect user inputs
-    x_center = float(input("Please enter center x.\n"))
-    y_center = float(input("Please enter center y.\n"))
-    resolution = float(input("Please enter starting resolution.\n"))
-    n_pixels = int(input("Please enter the size of the square (pixels).\n"))
-    # max_iter = int(input("Please enter the maximum number of iterations.\n"))
-    max_iter = 300
-    frames = int(input("Please enter the number of frames.\n"))
-    size_per_frame = float(input("Next frame scale?\n"))
+    x_center = -0.74951145384
+    y_center = 0.04961979335
+    resolution = 0.0000001
+    n_pixels = 256
+    max_iter = 2500
+    frames = 12
+    size_per_frame = 0.25
     
     start_time = datetime.now()
 
@@ -163,15 +161,21 @@ if __name__ == "__main__":
                 max_iter, 
                 frame_number, 
                 size_per_frame)))
-    while len(processes) > 0:
-        active_processes = []
-        for i in range(multiprocessing.cpu_count()):
-            active_processes.append(processes.pop(0))
-        for process in active_processes:
+    if len(processes) > 24: 
+        while len(processes) > 0:
+            active_processes = []
+            for i in range(multiprocessing.cpu_count()):
+                active_processes.append(processes.pop(0))
+            for process in active_processes:
+                process.start()
+            for process in active_processes:
+                process.join()
+            del active_processes
+    else: 
+        for process in processes: 
             process.start()
-        for process in active_processes:
+        for process in processes: 
             process.join()
-        del active_processes
 
     # compile the gif from the images and save
     intermediates = sort_intermediates(os.listdir('intermediates'))
