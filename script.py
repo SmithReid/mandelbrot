@@ -67,11 +67,11 @@ def mendelbrot(x, y, max_iter):
         For a complex number, c = x + yi, decide whether the series: z[n] = z[n-1]^2 + c converges, and if it diverges, how quickly it does so. 
     TODO: come up with a better way of measuring how quickly the series diverges, if it diverges
     """
-    z = Complex(0, 0)
+    z = Complex(0.0, 0.0)
     for i in range(max_iter):
         try: 
             z = z.square().add(Complex(x, y))
-            if z.real > 2: 
+            if z.real > 2.0: 
                 return i
         except: 
             return i
@@ -109,10 +109,10 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     max_iter = max_iter + (iter_step * frame_number)
 
     # calculate the limits of the image
-    x_min = x_center - ((n_pixels / 2) * resolution)
-    x_max = x_center + ((n_pixels / 2) * resolution)
-    y_min = y_center - ((n_pixels / 2) * resolution)
-    y_max = y_center + ((n_pixels / 2) * resolution)
+    x_min = x_center - ((n_pixels / 2.0) * resolution)
+    x_max = x_center + ((n_pixels / 2.0) * resolution)
+    y_min = y_center - ((n_pixels / 2.0) * resolution)
+    y_max = y_center + ((n_pixels / 2.0) * resolution)
 
     # run the mandelbrot calculation for each pixel
     img = np.zeros((n_pixels, n_pixels))
@@ -137,11 +137,11 @@ if __name__ == "__main__":
     for filename in old_images:
         os.remove('intermediates/{}'.format(filename))
 
-    x_center = -0.74951145384
-    y_center = 0.04961979335
-    resolution = 0.0000001
+    x_center = -0.749511453846643
+    y_center = 0.049619793350746
+    resolution = 0.00000000001
     n_pixels = 256
-    max_iter = 2500
+    max_iter = 3500
     frames = 12
     size_per_frame = 0.25
     
