@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
     x_center = -0.749511453846643
     y_center = 0.049619793350746
-    resolution = 0.00000000001
+    resolution = 1.0 / (10 ** 11)
     n_pixels = 256
     max_iter = 3500
     frames = 12
