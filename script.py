@@ -137,13 +137,13 @@ if __name__ == "__main__":
     for filename in old_images:
         os.remove('intermediates/{}'.format(filename))
 
-    x_center = -0.74951145384664374
-    y_center = 0.04961979335074600
-    resolution = 1.0 / (10 ** 13)
-    n_pixels = 256
-    max_iter = 4000
-    frames = 12
-    size_per_frame = 0.25
+    x_center = -0.7495114538466437
+    y_center = 0.0496197933507460
+    resolution = 1.0 / (10 ** 1)
+    n_pixels = 512
+    max_iter = 250
+    frames = 288
+    size_per_frame = 0.6
     
     start_time = datetime.now()
 
