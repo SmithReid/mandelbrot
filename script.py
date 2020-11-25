@@ -12,15 +12,22 @@ import imageio
 import os
 from threading import Thread
 from multiprocessing import cpu_count
+from bigfloat import *
 
-x_center = -0.74943170532045
-y_center = 0.04955179358990
-initial_resolution = 1.0 / (10 ** 1) # Start at 1 / (10 ** 2)
+# x: -1.74995768370609350360221450607069970727110579726252077930242837820286008082972804887218672784431700831100544507655659531379747541999999995
+
+# y: 0.00000000000000000278793706563379402178294753790944364927085054500163081379043930650189386849765202169477470552201325772332454726999999995
+
+
+
+x_center = BigFloat.exact(-1.74995768370609350360221450607069970727110579726252077930242837820286008082972804887218672784431700831100544507655659531379747541999999995)
+y_center = BigFloat.exact(0.00000000000000000278793706563379402178294753790944364927085054500163081379043930650189386849765202169477470552201325772332454726999999995)
+initial_resolution = BigFloat.exact(1.0 / (10 ** 1)) # Start at 1 / (10 ** 2)
 n_pixels = 128
 start_iter = 500 # start at 250
 iter_step = 300
 frames = 4
-size_per_frame = 0.6
+size_per_frame = BigFloat.exact(0.6)
 
 ##########################HELPERS################################
 
@@ -33,7 +40,7 @@ class Complex(object):
         self.real = real
         self.imaginary = imaginary
     def square(self):
-        return Complex(self.real ** 2 - self.imaginary ** 2, 2 * self.real * self.imaginary)
+        return Complex(self.real ** BigFloat.exact(2.0) - self.imaginary ** BigFloat.exact(2.0), BigFloat.exact(2.0) * self.real * self.imaginary)
     def add(self, other):
         return Complex(self.real + other.real, self.imaginary + other.imaginary)
     def __eq__(self, other):
@@ -77,11 +84,11 @@ def mendelbrot(x, y, max_iter):
         For a complex number, c = x + yi, decide whether the series: z[n] = z[n-1]^2 + c converges, and if it diverges, how quickly it does so. 
     TODO: come up with a better way of measuring how quickly the series diverges, if it diverges
     """
-    z = Complex(0.0, 0.0)
+    z = Complex(BigFloat.exact(0.0), BigFloat.exact(0.0))
     for i in range(max_iter):
         try: 
             z = z.square().add(Complex(x, y))
-            if z.real > 2.0: 
+            if z.real > BigFloat.exact(2.0): 
                 return i
         except: 
             return i
