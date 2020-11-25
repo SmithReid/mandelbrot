@@ -137,12 +137,12 @@ if __name__ == "__main__":
     for filename in old_images:
         os.remove('intermediates/{}'.format(filename))
 
-    x_center = -0.74943
-    y_center = 0.04955
-    resolution = 1.0 / (10 ** 2) # Start at 1 / (10 ** 2)
-    n_pixels = 512
-    max_iter = 500 # start at 250
-    frames = 144
+    x_center = -0.74943170532
+    y_center = 0.04955179359
+    resolution = 1.0 / (10 ** 8) # Start at 1 / (10 ** 2)
+    n_pixels = 256
+    max_iter = 4000 # start at 250
+    frames = 12
     size_per_frame = 0.25
     
     start_time = datetime.now()
@@ -187,14 +187,6 @@ if __name__ == "__main__":
     print("Runtime: {}".format(datetime.now() - start_time))
 
 
-"""
-Next Run: 
-<<<<<<< HEAD
-0.35204, -0.098
-=======
--0.735, 0.208
->>>>>>> e54532fa17905ba29a6a955dc3a80d93e461837a
-"""
 
 
 
