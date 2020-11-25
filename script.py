@@ -104,7 +104,7 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
         saves the frame to disk
     """
     # change values specific to the frame
-    iter_step = 125
+    iter_step = 175
     resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
     max_iter = max_iter + (iter_step * frame_number)
 
@@ -137,13 +137,13 @@ if __name__ == "__main__":
     for filename in old_images:
         os.remove('intermediates/{}'.format(filename))
 
-    x_center = -0.7495114538466437
-    y_center = 0.0496197933507460
-    resolution = 1.0 / (10 ** 1)
-    n_pixels = 512
-    max_iter = 250
-    frames = 288
-    size_per_frame = 0.6
+    x_center = -0.74943
+    y_center = 0.04955
+    resolution = 1.0 / (10 ** 3) # Start at 1 / (10 ** 2)
+    n_pixels = 256
+    max_iter = 1000 # start at 250
+    frames = 12
+    size_per_frame = 0.25
     
     start_time = datetime.now()
 
