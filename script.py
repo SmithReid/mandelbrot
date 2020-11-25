@@ -3,16 +3,26 @@
 # Creative Commons license
 # A basic implementation of the Mandelbrot set
 
-# The script collects some inputs, and then saves a .gif and each frame to disk
-
-# Wow, I've picked up some better practices since I wrote this...
+# Wow, I've picked up some better practices since I started this...
 
 from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import imageio
 import os
-import multiprocessing
+from threading import Thread
+from multiprocessing import cpu_count
+
+x_center = -0.74943170532045
+y_center = 0.04955179358990
+initial_resolution = 1.0 / (10 ** 1) # Start at 1 / (10 ** 2)
+n_pixels = 128
+start_iter = 500 # start at 250
+iter_step = 300
+frames = 4
+size_per_frame = 0.6
+
+##########################HELPERS################################
 
 class Complex(object):
     """
@@ -78,11 +88,6 @@ def mendelbrot(x, y, max_iter):
 
     return max_iter
 
-def remove_old_images():
-    old_images = os.listdir("intermediates")
-    for filename in old_images:
-        os.remove('intermediates/{}'.format(filename))
-
 def sort_intermediates(arr):
     """
     Sorts an array where each element is in the string form "{}.png".format(frame_number)
@@ -94,7 +99,7 @@ def sort_intermediates(arr):
     arr = [int(x.strip('.png')) for x in arr]
     return [str(x) + '.png' for x in sorted(arr)]
 
-def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, frame_number, size_per_frame):
+def render_frame(frame_number):
     """
     Renders and saves a single frame of the .gif
     Inputs: 
@@ -109,9 +114,8 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
         saves the frame to disk
     """
     # change values specific to the frame
-    iter_step = 300
     resolution = initial_resolution * (size_per_frame ** (frame_number - 1))
-    max_iter = max_iter + (iter_step * frame_number)
+    max_iter = start_iter + (iter_step * frame_number)
 
     # calculate the limits of the image
     x_min = x_center - ((n_pixels / 2.0) * resolution)
@@ -126,15 +130,52 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
             img[j][i] = mendelbrot(x, y, max_iter)
     np.savetxt('arrays/{}_array.csv'.format(str(frame_number)), img)
 
-    # save the image
-    plt.figure(figsize=(18, 18))
-    plt.axis('on')
-    plt.xlim(x_min, x_max)
-    plt.ylim(y_min, y_max)
-    plt.imshow(img, interpolation='none', extent=[x_min, x_max, y_min, y_max])
-    plt.savefig('intermediates/{}.png'.format(str(frame_number)).zfill(4))
-    plt.close()
-    print("Frame {} rendered.".format(str(frame_number)))
+    print("Array {} calculated.".format(str(frame_number)))
+
+########################MAIN FUNCTIONS###################################
+
+def remove_old_images():
+    old_images = os.listdir("intermediates")
+    for filename in old_images:
+        os.remove('intermediates/{}'.format(filename))
+
+def handle_multi_threading():
+    threads = []
+    for frame_number in range(1, frames + 1):
+        threads.append(Thread(
+            target=render_frame, args=(frame_number,)))
+    if len(threads) > cpu_count() * 2: 
+        while len(threads) > 0:
+            active_threads = []
+            for i in range(cpu_count() * 2):
+                active_threads.append(threads.pop(0))
+            for thread in active_threads:
+                thread.start()
+            for thread in active_threads:
+                thread.join()
+    else: 
+        for thread in threads: 
+            thread.start()
+        for thread in threads: 
+            thread.join()
+
+def render_images():
+    for filename in os.listdir('arrays'):
+        img = np.loadtxt('arrays/{}'.format(filename))
+
+        resolution = initial_resolution * (size_per_frame ** (int(filename[:-10]) - 1))
+
+        x_min = x_center - ((n_pixels / 2.0) * resolution)
+        x_max = x_center + ((n_pixels / 2.0) * resolution)
+        y_min = y_center - ((n_pixels / 2.0) * resolution)
+        y_max = y_center + ((n_pixels / 2.0) * resolution)
+
+        # save the image
+        plt.figure(figsize=(18,18))
+        plt.imshow(img, interpolation='none', extent=[x_min, x_max, y_min, y_max])
+        plt.savefig('intermediates/{}.png'.format(str(filename[:-10])).zfill(4))
+        plt.close()
+        print("Image {} rendered.".format(filename[:-10]))
 
 def compile_gif():
     intermediates = sort_intermediates(os.listdir('intermediates'))
@@ -145,54 +186,17 @@ def compile_gif():
     imageio.mimsave('final/{}.gif'.format(str(datetime.now().strftime('%Y-%m-%d--%H-%M'))), images)
 
 if __name__ == "__main__":
-    # remove the old intermediate images
-    remove_old_images()
-
-    x_center = -0.74943170532045
-    y_center = 0.04955179358990
-    resolution = 1.0 / (10 ** 2) # Start at 1 / (10 ** 2)
-    n_pixels = 512
-    max_iter = 500 # start at 250
-    frames = 48
-    size_per_frame = 0.6
-    
     start_time = datetime.now()
 
-    # for each frame, create and start a process
-    multiprocessing.set_start_method('spawn')
-    processes = []
-    for frame_number in range(1, frames + 1):
-        processes.append(multiprocessing.Process(
-            target=render_frame, 
-            args=(
-                x_center, 
-                y_center, 
-                resolution, 
-                n_pixels, 
-                max_iter, 
-                frame_number, 
-                size_per_frame)))
-    if len(processes) > multiprocessing.cpu_count() * 2: 
-        while len(processes) > 0:
-            active_processes = []
-            for i in range(multiprocessing.cpu_count()):
-                active_processes.append(processes.pop(0))
-            for process in active_processes:
-                process.start()
-            for process in active_processes:
-                process.join()
-            del active_processes
-    else: 
-        for process in processes: 
-            process.start()
-        for process in processes: 
-            process.join()
+    remove_old_images()
 
-    # compile the gif from the images and save
+    handle_multi_threading() # calls render_frame
+
+    render_images()
+
     compile_gif()
+
     print("Runtime: {}".format(datetime.now() - start_time))
-
-
 
 
 
