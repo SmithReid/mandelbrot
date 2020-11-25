@@ -78,6 +78,11 @@ def mendelbrot(x, y, max_iter):
 
     return max_iter
 
+def remove_old_images():
+    old_images = os.listdir("intermediates")
+    for filename in old_images:
+        os.remove('intermediates/{}'.format(filename))
+
 def sort_intermediates(arr):
     """
     Sorts an array where each element is in the string form "{}.png".format(frame_number)
@@ -131,11 +136,17 @@ def render_frame(x_center, y_center, initial_resolution, n_pixels, max_iter, fra
     plt.close()
     print("Frame {} rendered.".format(str(frame_number)))
 
+def compile_gif():
+    intermediates = sort_intermediates(os.listdir('intermediates'))
+    images = []
+    for filename in intermediates:
+        images.append(imageio.imread('intermediates/{}'.format(filename)))
+    print("Rendering gif.")
+    imageio.mimsave('final/{}.gif'.format(str(datetime.now().strftime('%Y-%m-%d--%H-%M'))), images)
+
 if __name__ == "__main__":
     # remove the old intermediate images
-    old_images = os.listdir("intermediates")
-    for filename in old_images:
-        os.remove('intermediates/{}'.format(filename))
+    remove_old_images()
 
     x_center = -0.74943170532045
     y_center = 0.04955179358990
@@ -178,12 +189,7 @@ if __name__ == "__main__":
             process.join()
 
     # compile the gif from the images and save
-    intermediates = sort_intermediates(os.listdir('intermediates'))
-    images = []
-    for filename in intermediates:
-        images.append(imageio.imread('intermediates/{}'.format(filename)))
-    print("Rendering gif.")
-    imageio.mimsave('final/{}.gif'.format(str(datetime.now().strftime('%Y-%m-%d--%H-%M'))), images)
+    compile_gif()
     print("Runtime: {}".format(datetime.now() - start_time))
 
 
