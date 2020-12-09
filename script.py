@@ -152,8 +152,8 @@ if __name__ == "__main__":
     y_center = 0.04955179358990
     resolution = 1.0 / (10 ** 2) # Start at 1 / (10 ** 2)
     n_pixels = 512
-    max_iter = 500 # start at 250
-    frames = 48
+    max_iter = 500 # start at 250-1000
+    frames = 84
     size_per_frame = 0.6
     
     start_time = datetime.now()
