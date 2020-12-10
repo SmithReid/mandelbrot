@@ -148,8 +148,8 @@ if __name__ == "__main__":
     # remove the old intermediate images
     remove_old_images()
 
-    x_center = -0.74943170532045
-    y_center = 0.04955179358990
+    x_center = -0.7494317053198
+    y_center = 0.049551793589862
     resolution = 1.0 / (10 ** 2) # Start at 1 / (10 ** 2)
     n_pixels = 512
     max_iter = 500 # start at 250-1000
