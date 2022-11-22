@@ -9,7 +9,7 @@ imageio==2.4.1
 kiwisolver==1.0.1         # via matplotlib
 matplotlib==2.2.3
 numpy==1.15.1
-pillow==6.2.0             # via imageio
+pillow==9.3.0             # via imageio
 pyparsing==2.2.0          # via matplotlib
 python-dateutil==2.7.3    # via matplotlib
 pytz==2018.5              # via matplotlib
